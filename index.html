@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluador Técnico: Ley de Ohm - INACAP</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --inacap-red: #e2231a;
+  --bg-dark: #0f0f0f;
+  --panel: #1a1a1a;
+  --panel-2: #252525;
+  --white: #ffffff;
+  --gray: #aaaaaa;
+  --dark-gray: #777777;
+  --border: rgba(226, 35, 26, 0.35);
+  --success: #2ecc71;
+  --warning: #f1c40f;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 920px;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  border-bottom: 3px solid var(--inacap-red);
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.inst-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+  color: var(--inacap-red);
+  letter-spacing: 2px;
+}
+
+.inst-dept {
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+  color: var(--white);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.sub-title {
+  font-size: 1.2rem;
+  color: var(--inacap-red);
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+.credit-line {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2.2rem;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+}
+
+.btn {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  text-transform: uppercase;
+  width: 100%;
+  margin-top: 0.6rem;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  background: var(--inacap-red);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #b51a14;
+}
+
+.btn-secondary {
+  background: #333333;
+  color: #ffffff;
+  border: 1px solid #555555;
+}
+
+.btn-secondary:hover {
+  background: #444444;
+}
+
+.form-control {
+  width: 100%;
+  background: #2a2a2a;
+  border: 2px solid #444;
+  padding: 1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  color: var(--white);
+  outline: none;
+  margin: 0.5rem 0 1rem;
+  border-radius: 4px;
+}
+
+.form-control:focus {
+  border-color: var(--inacap-red);
+}
+
+.answer-input {
+  flex: 1;
+  background: #2a2a2a;
+  border: 2px solid #444;
+  padding: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.5rem;
+  color: var(--white);
+  outline: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.answer-input:focus {
+  border-color: var(--inacap-red);
+}
+
+.unit-display {
+  background: #333;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--inacap-red);
+  font-size: 1.2rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.q-badge {
+  background: var(--inacap-red);
+  padding: 0.4rem 1rem;
+  font-family: 'Orbitron';
+  font-size: 0.8rem;
+}
+
+.data-chip {
+  background: var(--panel-2);
+  border-left: 4px solid var(--inacap-red);
+  padding: 0.8rem 1.5rem;
+  min-width: 120px;
+}
+
+.dc-value {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.3rem;
+  font-family: 'Share Tech Mono';
+}
+
+.nota-display {
+  font-family: 'Orbitron';
+  font-size: 5rem;
+  color: var(--inacap-red);
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#feedback, .message-box {
+  line-height: 1.5;
+}
+
+#feedback strong {
+  color: inherit;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stat-box {
+  background: #222;
+  border: 1px solid #444;
+  border-left: 4px solid var(--inacap-red);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.stat-title {
+  color: var(--gray);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: 'Share Tech Mono';
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-top: 0.3rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+  font-size: 1rem;
+}
+
+th, td {
+  border: 1px solid #444;
+  padding: 0.7rem;
+  text-align: left;
+}
+
+th {
+  background: #2b2b2b;
+  color: var(--inacap-red);
+  text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+  background: #202020;
+}
+
+.small-text {
+  color: var(--gray);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.section-title {
+  margin: 1.4rem 0 0.6rem;
+  color: var(--inacap-red);
+  font-size: 1.4rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  background: #333;
+  color: var(--white);
+  font-family: 'Share Tech Mono';
+  font-size: 0.9rem;
+}
+
+@media (max-width: 720px) {
+  .grid-2, .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inst-name {
+    font-size: 2rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+/* ===== GAMIFICACIÓN ===== */
+
+/* Toast de racha */
+#streak-toast {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120px);
+  background: linear-gradient(135deg, #f1c40f, #e67e22);
+  color: #111;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  box-shadow: 0 8px 30px rgba(241,196,15,0.5);
+  z-index: 9999;
+  transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+#streak-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Badge de racha activa en pantalla de pregunta */
+#streak-bar {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--warning);
+  margin-bottom: 0.8rem;
+  min-height: 1.4rem;
+  transition: opacity 0.3s;
+}
+
+/* Medallas en pantalla de resultados */
+.medal-display {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+}
+.medal-icon {
+  font-size: 4rem;
+  display: block;
+  animation: medal-pop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes medal-pop {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+}
+.medal-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+  letter-spacing: 0.05em;
+}
+.medal-sub {
+  font-size: 0.95rem;
+  color: var(--gray);
+  margin-top: 0.2rem;
+}
+
+/* Comparación histórica */
+.hist-compare {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-left: 4px solid var(--warning);
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.hist-compare .arrow-up   { color: var(--success); font-weight: 700; }
+.hist-compare .arrow-down { color: var(--inacap-red); font-weight: 700; }
+.hist-compare .arrow-same { color: var(--gray); font-weight: 700; }
+</style>
+</head>
+
+<body>
+
+<!-- Toast de racha -->
+<div id="streak-toast">🔥 ¡RACHA!</div>
+
+<div id="app">
+
+<header>
+  <div class="inst-name">INACAP</div>
+  <div class="inst-dept">Electricidad y Electrónica</div>
+  <div class="sub-title">Ley de Ohm</div>
+  <div class="credit-line">Aporte de la docente Edith Mena (NMZ)</div>
+</header>
+
+<!-- ====================== -->
+<!-- PANTALLA DE BIENVENIDA -->
+<!-- ====================== -->
+<div class="card" id="screen-welcome">
+  <p style="text-align:center; margin-bottom:1.5rem; color:var(--gray);">
+    Esta evaluación generará 10 ejercicios aleatorios basados en la serie E24.<br>
+    <strong>Nota mínima de aprobación (4.0): 60% de logro.</strong>
+  </p>
+
+  <label for="student-name" style="font-weight:700;">Nombre del estudiante</label>
+  <input class="form-control" id="student-name" type="text" placeholder="Ejemplo: Ana Pérez o ana.perez">
+
+  <label style="display:flex; gap:0.6rem; align-items:center; margin:0.5rem 0 1rem; color:var(--gray);">
+    <input type="checkbox" id="audio-enabled">
+    Activar asistencia auditiva opcional
+  </label>
+
+  <div class="message-box" style="background:#222; border-left:4px solid var(--inacap-red); padding:1rem; margin-bottom:1rem;">
+    <strong>Funcionamiento:</strong><br>
+    El estudiante podrá revisar su progreso y consultar rankings.
+  </div>
+
+  <div class="grid-2">
+    <button class="btn btn-primary" onclick="startQuiz()">Comenzar Evaluación</button>
+    <button class="btn btn-secondary" onclick="showStudentProgressFromWelcome()">Ver Mi Progreso</button>
+    <button class="btn btn-secondary" onclick="showRanking()">Ver Ranking</button>
+    <button class="btn btn-secondary" onclick="showTeacherPanel().catch(console.error)">Panel Docente</button>
+  </div>
+</div>
+
+<!-- ====================== -->
+<!-- PANTALLA DE PREGUNTAS -->
+<!-- ====================== -->
+<div class="card hidden" id="screen-question">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; gap:1rem; flex-wrap:wrap;">
+    <span class="q-badge" id="q-num">Pregunta 1</span>
+    <button id="btn-audio-toggle" onclick="toggleAudioInGame()"
+      style="font-family:'Orbitron',sans-serif; font-size:0.7rem; font-weight:700; padding:0.35rem 0.75rem; border:1px solid #555; border-radius:4px; cursor:pointer; background:#333; color:#aaa; text-transform:uppercase; white-space:nowrap; transition:0.3s;"
+      title="Activar/desactivar asistencia auditiva">
+      🔇 Audio
+    </button>
+    <span id="q-type" style="color:var(--inacap-red); font-weight:700;">LEY DE OHM</span>
+  </div>
+
+  <div id="streak-bar"></div>
+
+  <div id="data-chips" style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2rem;"></div>
+
+  <h2 id="question-text" style="margin-bottom:1.5rem;"></h2>
+
+  <div style="display:flex; gap:0; margin-bottom:1.5rem;">
+    <input class="answer-input" id="answer-input" type="number" step="any" placeholder="0.00">
+    <div class="unit-display" id="unit-display"></div>
+  </div>
+
+  <div id="feedback" style="display:none; padding:1rem; margin-bottom:1rem; border-radius:4px; font-weight:600;"></div>
+
+  <button class="btn btn-secondary hidden" id="btn-repeat-audio" onclick="readCurrentQuestion()">🔊 Repetir Pregunta (voz activa)</button>
+
+  <button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()">Validar Respuesta</button>
+
+  <button class="btn btn-primary hidden" id="btn-next" onclick="nextQuestion()">Siguiente Ejercicio</button>
+
+</div>
+
+<!-- ====================== -->
+<!-- PANTALLA DE RESULTADOS -->
+<!-- ====================== -->
+<div class="card hidden" id="screen-results">
+
+  <h2 style="text-align:center;">Resultado Final</h2>
+
+  <div class="nota-display" id="nota-display">1.0</div>
+
+  <div id="res-stats" style="text-align:center; margin-bottom:2rem; font-size:1.2rem; color:var(--gray);"></div>
+
+  <div id="result-detail"></div>
+
+  <div class="grid-2" style="margin-top:1.5rem;">
+    <button class="btn btn-primary" onclick="goHome()">Volver al Inicio</button>
+    <button class="btn btn-secondary" onclick="showMyProgress()">Ver Mi Progreso</button>
+    <button class="btn btn-secondary" onclick="showRanking()">Ver Ranking</button>
+    <button class="btn btn-secondary" onclick="location.reload()">Reiniciar Evaluador</button>
+  </div>
+
+</div>
+
+<!-- ====================== -->
+<!-- PANTALLA HISTORIAL -->
+<!-- ====================== -->
+<div class="card hidden" id="screen-progress">
+  <h2>Mi Progreso</h2>
+  <div id="progress-content"></div>
+  <div class="grid-2" style="margin-top:1.5rem;">
+    <button class="btn btn-primary" onclick="goHome()">Volver al Inicio</button>
+    <button class="btn btn-secondary" onclick="showRanking()">Ver Ranking</button>
+  </div>
+</div>
+
+<!-- ====================== -->
+<!-- PANTALLA RANKING -->
+<!-- ====================== -->
+<div class="card hidden" id="screen-ranking">
+  <h2>Ranking del Curso</h2>
+  <p class="small-text" style="margin-top:0.5rem;">
+    El ranking de promedio y superación considera estudiantes con al menos 6 jugadas registradas.
+    Esto evita premiar resultados aislados y favorece la práctica constante.
+  </p>
+  <div id="ranking-content"></div>
+  <button class="btn btn-primary" onclick="goHome()">Volver al Inicio</button>
+</div>
+
+<!-- ====================== -->
+<!-- PANEL DOCENTE -->
+<!-- ====================== -->
+<div class="card hidden" id="screen-teacher">
+  <h2>Panel Docente</h2>
+  <p class="small-text" style="margin-top:0.5rem;">
+    Vista para revisar historial completo, errores frecuentes del curso y administración local del registro.
+  </p>
+  <div id="teacher-content"></div>
+  <div class="grid-2" style="margin-top:1.5rem;">
+    <button class="btn btn-primary" onclick="goHome()">Volver al Inicio</button>
+    <button class="btn btn-secondary" onclick="exportHistoryCSV()">Exportar CSV</button>
+    <button class="btn btn-secondary" onclick="cleanOldRecords()">Conservar últimas 30 jugadas por estudiante</button>
+    <button class="btn btn-secondary" onclick="deleteAllHistory()">Borrar todo el historial</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+// ===========================================================
+// CONFIGURACIÓN GENERAL
+// ===========================================================
+
+const E24 = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+const MULTIPLIERS = [10, 100, 1000];
+const VOLTAGES = [5, 12, 15, 24];
+const TOTAL_QUESTIONS = 10;
+const MIN_PLAYS_FOR_RANKING = 6;
+const MAX_PLAYS_PER_STUDENT = 30;
+const STORAGE_KEY = "historialLeyOhmINACAP";
+
+let questions = [];
+let current = 0;
+let score = 0;
+let currentStudent = "";
+let audioEnabled = false;
+let errors = resetErrorCounter();
+let answeredCurrentQuestion = false;
+
+// Gamificación
+let streak = 0;       // racha actual de respuestas correctas
+let maxStreak = 0;    // racha máxima del intento
+
+// ===========================================================
+// FUNCIONES DE APOYO
+// ===========================================================
+
+function resetErrorCounter() {
+  return {
+    voltaje: 0,
+    resistencia: 0,
+    corriente: 0
+  };
+}
+
+function getRandR() {
+  return E24[Math.floor(Math.random() * E24.length)] *
+         MULTIPLIERS[Math.floor(Math.random() * MULTIPLIERS.length)];
+}
+
+function formatNumber(num, decimals = 2) {
+  return Number(num).toFixed(decimals);
+}
+
+function normalizeName(name) {
+  return name.trim().replace(/\s+/g, " ");
+}
+
+function calculateCurrent(v, r) {
+  let i = v / r;
+
+  if (i < 0.1) {
+    return {
+      val: parseFloat((i * 1000).toFixed(1)),
+      unit: "mA",
+      raw: i
+    };
+  }
+
+  return {
+    val: parseFloat(i.toFixed(2)),
+    unit: "A",
+    raw: i
+  };
+}
+
+function calculateGrade(correctAnswers, totalQuestions) {
+  const percent = (correctAnswers / totalQuestions) * 100;
+  let grade;
+
+  // Escala chilena 1 a 7 con 60% para nota 4.0.
+  if (percent < 60) {
+    grade = 1 + (percent / 60) * 3;
+  } else {
+    grade = 4 + ((percent - 60) / 40) * 3;
+  }
+
+  if (grade > 7) grade = 7;
+  if (grade < 1) grade = 1;
+
+  return Number(grade.toFixed(1));
+}
+
+function hideAllScreens() {
+  const screens = [
+    "screen-welcome",
+    "screen-question",
+    "screen-results",
+    "screen-progress",
+    "screen-ranking",
+    "screen-teacher"
+  ];
+
+  screens.forEach(id => document.getElementById(id).classList.add("hidden"));
+}
+
+function goHome() {
+  hideAllScreens();
+  document.getElementById("screen-welcome").classList.remove("hidden");
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ===========================================================
+// ASISTENCIA AUDITIVA
+// ===========================================================
+
+function speak(text) {
+  if (!audioEnabled) return;
+  if (!("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "es-CL";
+  utterance.rate = 0.95;
+  window.speechSynthesis.speak(utterance);
+}
+
+function updateAudioToggleUI() {
+  const btn = document.getElementById("btn-audio-toggle");
+  const repeatBtn = document.getElementById("btn-repeat-audio");
+  if (!btn) return;
+  if (audioEnabled) {
+    btn.textContent = "🔊 Audio";
+    btn.style.background = "var(--inacap-red)";
+    btn.style.color = "#fff";
+    btn.style.borderColor = "var(--inacap-red)";
+    if (repeatBtn) repeatBtn.classList.remove("hidden");
+  } else {
+    btn.textContent = "🔇 Audio";
+    btn.style.background = "#333";
+    btn.style.color = "#aaa";
+    btn.style.borderColor = "#555";
+    if (repeatBtn) repeatBtn.classList.add("hidden");
+  }
+}
+
+function toggleAudioInGame() {
+  audioEnabled = !audioEnabled;
+  updateAudioToggleUI();
+  if (audioEnabled) readCurrentQuestion();
+  else window.speechSynthesis && window.speechSynthesis.cancel();
+}
+
+// ===========================================================
+// SONIDOS (Web Audio API — sin archivos externos)
+// ===========================================================
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function getACtx() {
+  if (!_actx) _actx = new AudioCtx();
+  return _actx;
+}
+
+function playBeep(frequency, duration, type = "sine", gain = 0.25, delay = 0) {
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gn  = ctx.createGain();
+    osc.connect(gn);
+    gn.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, ctx.currentTime + delay);
+    gn.gain.setValueAtTime(gain, ctx.currentTime + delay);
+    gn.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration + 0.05);
+  } catch(_) {}
+}
+
+function soundCorrect() {
+  // Dos tonos ascendentes
+  playBeep(660, 0.12, "sine", 0.25, 0);
+  playBeep(880, 0.2,  "sine", 0.25, 0.12);
+}
+
+function soundError() {
+  // Tono descendente disonante
+  playBeep(300, 0.18, "sawtooth", 0.2, 0);
+  playBeep(220, 0.22, "sawtooth", 0.2, 0.15);
+}
+
+function soundStreak3() {
+  // Fanfarria corta x3
+  playBeep(523, 0.1, "sine", 0.3, 0);
+  playBeep(659, 0.1, "sine", 0.3, 0.1);
+  playBeep(784, 0.2, "sine", 0.3, 0.2);
+}
+
+function soundStreak5() {
+  // Fanfarria épica x5
+  playBeep(523, 0.08, "sine", 0.35, 0);
+  playBeep(659, 0.08, "sine", 0.35, 0.08);
+  playBeep(784, 0.08, "sine", 0.35, 0.16);
+  playBeep(1047,0.08, "sine", 0.35, 0.24);
+  playBeep(1319,0.25, "sine", 0.35, 0.32);
+}
+
+// ===========================================================
+// GAMIFICACIÓN — RACHA
+// ===========================================================
+
+const STREAK_MESSAGES = {
+  3: "🔥 ¡RACHA ×3! ¡Tres seguidas!",
+  4: "⚡ ¡RACHA ×4! ¡Imparable!",
+  5: "🚀 ¡RACHA ×5! ¡Perfecto!",
+  6: "💥 ¡×6 SEGUIDAS! ¡Brutal!",
+  7: "🌟 ¡×7 SEGUIDAS! ¡Increíble!",
+  8: "👑 ¡×8 SEGUIDAS! ¡Dominando!",
+  9: "🏆 ¡×9 SEGUIDAS! ¡Casi perfecto!",
+  10:"⚡🏆 ¡PERFECTO! ¡10/10!"
+};
+
+function showStreakToast(msg) {
+  const toast = document.getElementById("streak-toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+function updateStreakBar() {
+  const bar = document.getElementById("streak-bar");
+  if (!bar) return;
+  if (streak >= 3) {
+    const fires = "🔥".repeat(Math.min(streak, 10));
+    bar.textContent = `${fires} RACHA ACTIVA: ${streak} SEGUIDAS`;
+    bar.style.opacity = "1";
+  } else if (streak > 0) {
+    bar.textContent = `⚡ ${streak} correcta${streak > 1 ? "s" : ""} seguida${streak > 1 ? "s" : ""}`;
+    bar.style.opacity = "0.6";
+  } else {
+    bar.textContent = "";
+    bar.style.opacity = "0";
+  }
+}
+
+// ===========================================================
+// GAMIFICACIÓN — MEDALLAS
+// ===========================================================
+
+function getMedal(grade, streakMax) {
+  if (grade >= 6.5) return { icon: "🏆", label: "ORO — Excelencia", sub: "Dominio total de la Ley de Ohm", color: "#f1c40f" };
+  if (grade >= 5.5) return { icon: "🥈", label: "PLATA — Muy bueno", sub: "Sólido manejo del contenido", color: "#bdc3c7" };
+  if (grade >= 4.0) return { icon: "🥉", label: "BRONCE — Aprobado", sub: "Sigue practicando para mejorar", color: "#e67e22" };
+  if (streakMax >= 3) return { icon: "⚡", label: "RAYO — Potencial", sub: `Lograste racha de ${streakMax}. ¡Sigue adelante!`, color: "#9b59b6" };
+  return { icon: "📚", label: "ESTUDIANTE EN CAMINO", sub: "La práctica constante te llevará al éxito", color: "#777" };
+}
+
+function medalHtml(grade, streakMax) {
+  const m = getMedal(grade, streakMax);
+  return `
+    <div class="medal-display">
+      <span class="medal-icon">${m.icon}</span>
+      <div class="medal-label" style="color:${m.color};">${m.label}</div>
+      <div class="medal-sub">${m.sub}</div>
+    </div>
+  `;
+}
+
+// ===========================================================
+// GAMIFICACIÓN — COMPARACIÓN HISTÓRICA
+// ===========================================================
+
+function historicCompareHtml(grade) {
+  const records = getStudentRecords(currentStudent);
+  // Excluye el registro que acabamos de guardar (el último) para comparar con el anterior
+  const prev = records.slice(0, -1);
+  if (prev.length === 0) return "";
+
+  const avg = prev.reduce((s, r) => s + r.nota, 0) / prev.length;
+  const best = Math.max(...prev.map(r => r.nota));
+  const diff = grade - avg;
+  const diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(1)}`;
+
+  let arrowClass, arrowSym, comparison;
+  if (diff > 0.15) {
+    arrowClass = "arrow-up"; arrowSym = "▲";
+    comparison = `Estás <span class="${arrowClass}">${arrowSym} ${diffStr} puntos</span> sobre tu promedio histórico.`;
+  } else if (diff < -0.15) {
+    arrowClass = "arrow-down"; arrowSym = "▼";
+    comparison = `Estás <span class="${arrowClass}">${arrowSym} ${diffStr} puntos</span> bajo tu promedio histórico.`;
+  } else {
+    arrowClass = "arrow-same";
+    comparison = `<span class="${arrowClass}">≈ Igual</span> a tu promedio histórico.`;
+  }
+
+  const vsBest = grade >= best
+    ? `🌟 <strong>¡Nueva mejor nota!</strong>`
+    : `Tu mejor nota anterior fue <strong>${best.toFixed(1)}</strong>.`;
+
+  return `
+    <div class="hist-compare">
+      📊 <strong>Comparación con tu historial</strong> (${prev.length} jugada${prev.length > 1 ? "s" : ""} previas)<br>
+      Promedio anterior: <strong>${avg.toFixed(1)}</strong> — ${comparison}<br>
+      ${vsBest}
+    </div>
+  `;
+}
+
+function readCurrentQuestion() {
+  if (!audioEnabled) return;
+
+  const q = questions[current];
+  const dataText = q.data.map(d => `${d.l}: ${d.v} ${d.unit}`).join(". ");
+  speak(`Ejercicio ${current + 1} de ${TOTAL_QUESTIONS}. ${dataText}. ${q.q}. Responde en ${q.unit}.`);
+}
+
+// ===========================================================
+// GENERACIÓN DE PREGUNTAS
+// ===========================================================
+
+function generateQuestion() {
+  const type = Math.floor(Math.random() * 3);
+
+  const V = VOLTAGES[Math.floor(Math.random() * VOLTAGES.length)];
+  const R = getRandR();
+  const IObj = calculateCurrent(V, R);
+
+  if (type === 0) {
+    // Recalcular V a partir de la corriente REDONDEADA que se muestra al estudiante,
+    // para que la respuesta esperada sea consistente con los datos presentados.
+    const I_display_A = IObj.unit === "mA" ? IObj.val / 1000 : IObj.val;
+    const V_ans = parseFloat((I_display_A * R).toFixed(2));
+    return {
+      type: "voltaje",
+      q: "¿Cuál es el voltaje total del circuito?",
+      data: [
+        { l: "R", v: R, unit: "Ω" },
+        { l: "I", v: IObj.val, unit: IObj.unit }
+      ],
+      ans: V_ans,
+      unit: "V",
+      topic: "Cálculo de voltaje",
+      raw: {
+        V: V_ans,
+        R: R,
+        I_A: I_display_A,
+        I_display: IObj.val,
+        I_unit: IObj.unit
+      }
+    };
+  }
+
+  if (type === 1) {
+    // Recalcular R a partir de la corriente REDONDEADA que se muestra al estudiante.
+    const I_display_A = IObj.unit === "mA" ? IObj.val / 1000 : IObj.val;
+    const R_ans = parseFloat((V / I_display_A).toFixed(2));
+    return {
+      type: "resistencia",
+      q: "¿Cuál es la resistencia del componente?",
+      data: [
+        { l: "V", v: V, unit: "V" },
+        { l: "I", v: IObj.val, unit: IObj.unit }
+      ],
+      ans: R_ans,
+      unit: "Ω",
+      topic: "Cálculo de resistencia",
+      raw: {
+        V: V,
+        R: R_ans,
+        I_A: I_display_A,
+        I_display: IObj.val,
+        I_unit: IObj.unit
+      }
+    };
+  }
+
+  return {
+    type: "corriente",
+    q: "¿Cuál es la intensidad de corriente?",
+    data: [
+      { l: "V", v: V, unit: "V" },
+      { l: "R", v: R, unit: "Ω" }
+    ],
+    ans: IObj.val,
+    unit: IObj.unit,
+    topic: "Cálculo de corriente",
+    raw: {
+      V: V,
+      R: R,
+      I_A: IObj.raw,
+      I_display: IObj.val,
+      I_unit: IObj.unit
+    }
+  };
+}
+
+// ===========================================================
+// RETROALIMENTACIÓN SOLO PARA ERRORES
+// ===========================================================
+
+function generarRetroalimentacion(q, userAns) {
+  const userText = `Tu respuesta fue: ${userAns} ${q.unit}`;
+
+  let formula = "";
+  let desarrollo = "";
+  let explicacion = "";
+  let advertencia = "";
+
+  if (q.type === "voltaje") {
+    formula = "V = I × R";
+    const corrienteEnA = q.raw.I_A;
+
+    desarrollo = `
+      <strong>Datos entregados:</strong><br>
+      R = ${q.raw.R} Ω<br>
+      I = ${q.raw.I_display} ${q.raw.I_unit}<br><br>
+
+      <strong>Conversión necesaria:</strong><br>
+      ${q.raw.I_display} ${q.raw.I_unit} = ${formatNumber(corrienteEnA, 4)} A<br><br>
+
+      <strong>Aplicación de la fórmula:</strong><br>
+      V = I × R<br>
+      V = ${formatNumber(corrienteEnA, 4)} × ${q.raw.R}<br>
+      V = ${q.ans} V
+    `;
+
+    explicacion = `
+      Para calcular voltaje, debes multiplicar la corriente por la resistencia.
+      En la Ley de Ohm, la corriente debe estar expresada en amperes.
+    `;
+
+    advertencia = `
+      Si usaste directamente el valor en mA sin convertirlo a A,
+      el resultado queda multiplicado por 1000 y será incorrecto.
+    `;
+  }
+
+  if (q.type === "resistencia") {
+    formula = "R = V / I";
+    const corrienteEnA = q.raw.I_A;
+
+    desarrollo = `
+      <strong>Datos entregados:</strong><br>
+      V = ${q.raw.V} V<br>
+      I = ${q.raw.I_display} ${q.raw.I_unit}<br><br>
+
+      <strong>Conversión necesaria:</strong><br>
+      ${q.raw.I_display} ${q.raw.I_unit} = ${formatNumber(corrienteEnA, 4)} A<br><br>
+
+      <strong>Aplicación de la fórmula:</strong><br>
+      R = V / I<br>
+      R = ${q.raw.V} / ${formatNumber(corrienteEnA, 4)}<br>
+      R = ${q.ans} Ω
+    `;
+
+    explicacion = `
+      Para calcular resistencia, debes dividir el voltaje por la corriente.
+      La corriente debe estar en amperes antes de realizar la división.
+    `;
+
+    advertencia = `
+      Un error común es dividir usando mA directamente.
+      Por ejemplo, no es lo mismo dividir por 24 mA que dividir por 0,024 A.
+    `;
+  }
+
+  if (q.type === "corriente") {
+    formula = "I = V / R";
+    const corrienteA = q.raw.I_A;
+    const corrienteResultado = q.raw.I_display;
+
+    desarrollo = `
+      <strong>Datos entregados:</strong><br>
+      V = ${q.raw.V} V<br>
+      R = ${q.raw.R} Ω<br><br>
+
+      <strong>Aplicación de la fórmula:</strong><br>
+      I = V / R<br>
+      I = ${q.raw.V} / ${q.raw.R}<br>
+      I = ${formatNumber(corrienteA, 4)} A<br><br>
+
+      <strong>Expresión en la unidad solicitada:</strong><br>
+      I = ${corrienteResultado} ${q.unit}
+    `;
+
+    explicacion = `
+      Para calcular corriente, debes dividir el voltaje por la resistencia.
+      Si el resultado en amperes es muy pequeño, se expresa en miliamperes.
+    `;
+
+    advertencia = `
+      Recuerda que 1 A = 1000 mA.
+      Por eso, 0,024 A equivale a 24 mA.
+    `;
+  }
+
+  return `
+    ❌ <strong>Respuesta incorrecta.</strong><br><br>
+    ${userText}<br><br>
+
+    <strong>Fórmula correcta:</strong> ${formula}<br><br>
+
+    ${desarrollo}<br><br>
+
+    <strong>Resultado correcto:</strong> ${q.ans} ${q.unit}<br><br>
+
+    <strong>Retroalimentación:</strong><br>
+    ${explicacion}<br><br>
+
+    <strong>Revisa especialmente:</strong><br>
+    ${advertencia}
+  `;
+}
+
+function getRecommendations(errorsObj) {
+  const totalErrors = errorsObj.voltaje + errorsObj.resistencia + errorsObj.corriente;
+
+  if (totalErrors === 0) {
+    return `
+      Excelente desempeño. Se recomienda continuar practicando con ejercicios mixtos
+      y avanzar hacia circuitos serie, paralelo y mixtos.
+    `;
+  }
+
+  let recommendations = [];
+
+  if (errorsObj.voltaje > 0) {
+    recommendations.push("Repasar el cálculo de voltaje usando V = I × R.");
+  }
+
+  if (errorsObj.resistencia > 0) {
+    recommendations.push("Repasar el despeje de resistencia usando R = V / I.");
+  }
+
+  if (errorsObj.corriente > 0) {
+    recommendations.push("Repasar el cálculo de corriente usando I = V / R.");
+  }
+
+  const conversionNeeded = errorsObj.voltaje + errorsObj.resistencia;
+  if (conversionNeeded > 0) {
+    recommendations.push("Reforzar conversión de unidades: 1 A = 1000 mA.");
+  }
+
+  recommendations.push("Bibliografía sugerida:  Boylestad - introduccion al analisis de circuitos");
+
+  return recommendations.map(item => `• ${item}`).join("<br>");
+}
+
+function errorSummaryHtml(errorsObj) {
+  return `
+    <ul style="margin-left:1.2rem; line-height:1.6;">
+      <li>Errores en voltaje: <strong>${errorsObj.voltaje}</strong></li>
+      <li>Errores en resistencia: <strong>${errorsObj.resistencia}</strong></li>
+      <li>Errores en corriente: <strong>${errorsObj.corriente}</strong></li>
+    </ul>
+  `;
+}
+
+// ===========================================================
+// FLUJO DEL QUIZ
+// ===========================================================
+
+function startQuiz() {
+  const nameInput = document.getElementById("student-name").value;
+  currentStudent = normalizeName(nameInput);
+  audioEnabled = document.getElementById("audio-enabled").checked;
+  updateAudioToggleUI();
+
+  if (currentStudent.length < 2) {
+    alert("Debe ingresar un nombre o usuario antes de comenzar.");
+    return;
+  }
+
+  questions = [];
+  current = 0;
+  score = 0;
+  streak = 0;
+  maxStreak = 0;
+  errors = resetErrorCounter();
+
+  for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+    questions.push(generateQuestion());
+  }
+
+  hideAllScreens();
+  document.getElementById("screen-question").classList.remove("hidden");
+
+  speak("Bienvenido al evaluador de Ley de Ohm. Resolverás diez ejercicios. Ingresa solo el valor numérico en la unidad solicitada. La nota mínima de aprobación es cuatro coma cero con sesenta por ciento de logro.");
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  answeredCurrentQuestion = false;
+
+  document.getElementById("q-num").textContent = `EJERCICIO ${current + 1} / ${TOTAL_QUESTIONS}`;
+  document.getElementById("q-type").textContent = q.topic.toUpperCase();
+  document.getElementById("question-text").textContent = q.q;
+  document.getElementById("unit-display").textContent = q.unit;
+  document.getElementById("answer-input").value = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("btn-submit").classList.remove("hidden");
+  document.getElementById("btn-next").classList.add("hidden");
+
+  const chips = document.getElementById("data-chips");
+  chips.innerHTML = q.data.map(d => `
+    <div class="data-chip">
+      <div style="font-size:0.7rem; color:var(--inacap-red); text-transform:uppercase;">${d.l}</div>
+      <div class="dc-value">${d.v} ${d.unit}</div>
+    </div>
+  `).join("");
+
+  if (audioEnabled) setTimeout(readCurrentQuestion, 500);
+}
+
+// ===========================================================
+// VALIDACIÓN
+// ===========================================================
+
+function submitAnswer() {
+  if (answeredCurrentQuestion) return;
+
+  const input = document.getElementById("answer-input").value.trim();
+  const userAns = parseFloat(input);
+  const q = questions[current];
+  const fb = document.getElementById("feedback");
+
+  if (input === "" || isNaN(userAns)) {
+    fb.style.display = "block";
+    fb.style.background = "rgba(226,35,26,0.2)";
+    fb.style.color = "#ff4444";
+    fb.innerHTML = `
+      <strong>Respuesta no válida.</strong><br><br>
+      Debes ingresar un número antes de validar la respuesta.
+    `;
+    speak("Respuesta no válida. Debes ingresar un número antes de validar.");
+    return;
+  }
+
+  const tolerance = Math.max(Math.abs(q.ans) * 0.05, 0.01);
+  const isCorrect = Math.abs(userAns - q.ans) <= tolerance;
+
+  if (isCorrect) {
+    score++;
+    streak++;
+    if (streak > maxStreak) maxStreak = streak;
+
+    soundCorrect();
+
+    // Mostrar toast y sonido especial para rachas
+    if (streak === 5) {
+      soundStreak5();
+      showStreakToast(STREAK_MESSAGES[5]);
+      speak("¡Racha de cinco! ¡Imparable!");
+    } else if (streak === 3) {
+      soundStreak3();
+      showStreakToast(STREAK_MESSAGES[3]);
+      speak("¡Racha de tres seguidas!");
+    } else if (streak > 5 && STREAK_MESSAGES[streak]) {
+      soundStreak5();
+      showStreakToast(STREAK_MESSAGES[streak]);
+    } else if (streak > 3 && STREAK_MESSAGES[streak]) {
+      soundStreak3();
+      showStreakToast(STREAK_MESSAGES[streak]);
+    }
+
+    fb.style.display = "none";
+    speak("Respuesta correcta.");
+  } else {
+    errors[q.type]++;
+    streak = 0;
+
+    soundError();
+
+    fb.style.display = "block";
+    fb.style.background = "rgba(226,35,26,0.2)";
+    fb.style.color = "#ff4444";
+    fb.innerHTML = generarRetroalimentacion(q, userAns);
+
+    speak(`Respuesta incorrecta. El resultado correcto es ${q.ans} ${q.unit}. Revisa la retroalimentación en pantalla.`);
+  }
+
+  updateStreakBar();
+
+  answeredCurrentQuestion = true;
+  document.getElementById("btn-submit").classList.add("hidden");
+  document.getElementById("btn-next").classList.remove("hidden");
+}
+
+function nextQuestion() {
+  current++;
+
+  if (current < TOTAL_QUESTIONS) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  hideAllScreens();
+  document.getElementById("screen-results").classList.remove("hidden");
+
+  const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
+  const grade = calculateGrade(score, TOTAL_QUESTIONS);
+  const status = grade >= 4 ? "Aprobado" : "No aprobado";
+  const record = saveCurrentPlay(percentage, grade, status);
+
+  document.getElementById("nota-display").textContent = grade.toFixed(1);
+  document.getElementById("res-stats").textContent =
+    `${currentStudent}, lograste ${score} de ${TOTAL_QUESTIONS} respuestas correctas. Porcentaje de logro: ${percentage}%. Estado: ${status}.`;
+
+  const compareHtml = historicCompareHtml(grade);
+
+  document.getElementById("result-detail").innerHTML = `
+    ${medalHtml(grade, maxStreak)}
+
+    ${compareHtml}
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-title">Correctas</div>
+        <div class="stat-value">${score}/${TOTAL_QUESTIONS}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Logro</div>
+        <div class="stat-value">${percentage}%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Racha máx.</div>
+        <div class="stat-value">${maxStreak > 0 ? "🔥 " : ""}${maxStreak}</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Fallas frecuentes de esta jugada</h3>
+    ${errorSummaryHtml(errors)}
+
+    <h3 class="section-title">Recomendaciones de estudio</h3>
+    <p class="small-text">${getRecommendations(errors)}</p>
+  `;
+
+  speak(`Evaluación finalizada. Tu nota es ${grade.toFixed(1)}. Tu porcentaje de logro es ${percentage} por ciento.`);
+}
+
+// ===========================================================
+// HISTORIAL LOCAL
+// ===========================================================
+
+function getHistory() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+
+  try {
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function setHistory(history) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function getStudentRecords(studentName) {
+  const history = getHistory();
+  return history.filter(item => item.nombre.toLowerCase() === studentName.toLowerCase());
+}
+
+function saveCurrentPlay(percentage, grade, status) {
+  const history = getHistory();
+  const studentRecords = history.filter(item => item.nombre.toLowerCase() === currentStudent.toLowerCase());
+  const playNumber = studentRecords.length + 1;
+
+  const record = {
+    nombre: currentStudent,
+    fecha: new Date().toLocaleString("es-CL"),
+    timestamp: Date.now(),
+    jugada: playNumber,
+    correctas: score,
+    total: TOTAL_QUESTIONS,
+    porcentaje: percentage,
+    nota: grade,
+    estado: status,
+    errores: { ...errors }
+  };
+
+  history.push(record);
+  setHistory(history);
+  return { ...record, playNumber };
+}
+
+// ===========================================================
+// MI PROGRESO
+// ===========================================================
+
+function showStudentProgressFromWelcome() {
+  const nameInput = document.getElementById("student-name").value;
+  const name = normalizeName(nameInput);
+
+  if (name.length < 2) {
+    alert("Ingrese primero el nombre o usuario para consultar el progreso.");
+    return;
+  }
+
+  currentStudent = name;
+  showMyProgress();
+}
+
+function showMyProgress() {
+  if (!currentStudent || currentStudent.length < 2) {
+    alert("Ingrese primero el nombre o usuario para consultar el progreso.");
+    goHome();
+    return;
+  }
+
+  hideAllScreens();
+  document.getElementById("screen-progress").classList.remove("hidden");
+
+  const records = getStudentRecords(currentStudent).sort((a, b) => a.timestamp - b.timestamp);
+  const content = document.getElementById("progress-content");
+
+  if (records.length === 0) {
+    content.innerHTML = `<p class="small-text">No hay jugadas registradas para ${escapeHtml(currentStudent)}.</p>`;
+    return;
+  }
+
+  const best = Math.max(...records.map(r => r.nota));
+  const avg = records.reduce((sum, r) => sum + r.nota, 0) / records.length;
+  const last = records[records.length - 1].nota;
+  const improvement = calculateImprovement(records);
+
+  content.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-title">Jugadas</div>
+        <div class="stat-value">${records.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Promedio</div>
+        <div class="stat-value">${avg.toFixed(1)}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Mejor nota</div>
+        <div class="stat-value">${best.toFixed(1)}</div>
+      </div>
+    </div>
+
+    <p class="small-text">
+      Última nota: <strong>${last.toFixed(1)}</strong>.
+      ${improvement !== null ? `Mejora comparando primeras 3 y últimas 3 jugadas: <strong>${improvement >= 0 ? "+" : ""}${improvement.toFixed(1)}</strong> puntos.` : "Para calcular superación se requieren al menos 6 jugadas."}
+    </p>
+
+    <h3 class="section-title">Historial de jugadas</h3>
+    ${recordsTable(records)}
+  `;
+}
+
+function recordsTable(records) {
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Jugada</th>
+            <th>Fecha</th>
+            <th>Correctas</th>
+            <th>Logro</th>
+            <th>Nota</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${records.map(r => `
+            <tr>
+              <td>${r.jugada}</td>
+              <td>${escapeHtml(r.fecha)}</td>
+              <td>${r.correctas}/${r.total}</td>
+              <td>${r.porcentaje}%</td>
+              <td>${Number(r.nota).toFixed(1)}</td>
+              <td>${escapeHtml(r.estado)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ===========================================================
+// RANKING
+// ===========================================================
+
+function groupByStudent() {
+  const history = getHistory();
+  const grouped = {};
+
+  history.forEach(record => {
+    const key = record.nombre.toLowerCase();
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(record);
+  });
+
+  Object.keys(grouped).forEach(key => {
+    grouped[key].sort((a, b) => a.timestamp - b.timestamp);
+  });
+
+  return grouped;
+}
+
+function calculateImprovement(records) {
+  if (records.length < MIN_PLAYS_FOR_RANKING) return null;
+
+  const firstThree = records.slice(0, 3);
+  const lastThree = records.slice(-3);
+
+  const firstAvg = firstThree.reduce((sum, r) => sum + r.nota, 0) / firstThree.length;
+  const lastAvg = lastThree.reduce((sum, r) => sum + r.nota, 0) / lastThree.length;
+
+  return Number((lastAvg - firstAvg).toFixed(1));
+}
+
+function studentStats() {
+  const grouped = groupByStudent();
+
+  return Object.values(grouped).map(records => {
+    const name = records[0].nombre;
+    const plays = records.length;
+    const avg = records.reduce((sum, r) => sum + r.nota, 0) / plays;
+    const best = Math.max(...records.map(r => r.nota));
+    const last = records[records.length - 1].nota;
+    const improvement = calculateImprovement(records);
+
+    const totalErrors = records.reduce((acc, r) => {
+      acc.voltaje += r.errores?.voltaje || 0;
+      acc.resistencia += r.errores?.resistencia || 0;
+      acc.corriente += r.errores?.corriente || 0;
+      return acc;
+    }, resetErrorCounter());
+
+    return {
+      name,
+      plays,
+      avg: Number(avg.toFixed(1)),
+      best: Number(best.toFixed(1)),
+      last: Number(last.toFixed(1)),
+      improvement,
+      errors: totalErrors
+    };
+  });
+}
+
+function showRanking() {
+  hideAllScreens();
+  document.getElementById("screen-ranking").classList.remove("hidden");
+
+  const stats = studentStats();
+  const content = document.getElementById("ranking-content");
+
+  if (stats.length === 0) {
+    content.innerHTML = `<p class="small-text" style="margin-top:1rem;">Aún no existen jugadas registradas.</p>`;
+    return;
+  }
+
+  const practiceRank = [...stats].sort((a, b) => b.plays - a.plays).slice(0, 10);
+  const avgRank = [...stats]
+    .filter(s => s.plays >= MIN_PLAYS_FOR_RANKING)
+    .sort((a, b) => b.avg - a.avg)
+    .slice(0, 10);
+  const improvementRank = [...stats]
+    .filter(s => s.improvement !== null)
+    .sort((a, b) => b.improvement - a.improvement)
+    .slice(0, 10);
+
+  content.innerHTML = `
+    <h3 class="section-title">Estudiantes que más han practicado</h3>
+    ${rankingTable(practiceRank, "plays")}
+
+    <h3 class="section-title">Mejor promedio desde 6 jugadas</h3>
+    ${avgRank.length ? rankingTable(avgRank, "avg") : `<p class="small-text">Aún no hay estudiantes con 6 jugadas registradas.</p>`}
+
+    <h3 class="section-title">Mayor superación</h3>
+    ${improvementRank.length ? rankingTable(improvementRank, "improvement") : `<p class="small-text">Aún no hay datos suficientes para calcular superación.</p>`}
+  `;
+}
+
+function rankingTable(items, metric) {
+  const metricTitle = {
+    plays: "Jugadas",
+    avg: "Promedio",
+    improvement: "Mejora"
+  }[metric];
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Estudiante</th>
+            <th>${metricTitle}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((item, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${escapeHtml(item.name)}</td>
+              <td>${formatMetric(item, metric)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function formatMetric(item, metric) {
+  if (metric === "plays") return `${item.plays}`;
+  if (metric === "avg") return `${item.avg.toFixed(1)}`;
+  if (metric === "improvement") return `${item.improvement >= 0 ? "+" : ""}${item.improvement.toFixed(1)}`;
+  return "";
+}
+
+// ===========================================================
+// PANEL DOCENTE
+// ===========================================================
+
+// Hash SHA-256 de "docente123" — la clave no queda en texto plano en el fuente.
+// Para cambiarla, reemplaza este valor por el hash de la nueva clave.
+const TEACHER_HASH = "9228105f4ea40ae4b70fde55ee2caf4495c1f188333c41ef566417ab04819f56";
+
+async function hashPassword(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function showTeacherPanel() {
+  const password = prompt("Ingrese clave docente:");
+  if (!password) return;
+
+  const hashed = await hashPassword(password);
+  if (hashed !== TEACHER_HASH) {
+    alert("Clave incorrecta.");
+    return;
+  }
+
+  hideAllScreens();
+  document.getElementById("screen-teacher").classList.remove("hidden");
+
+  const stats = studentStats();
+  const history = getHistory().sort((a, b) => b.timestamp - a.timestamp);
+  const content = document.getElementById("teacher-content");
+
+  if (history.length === 0) {
+    content.innerHTML = `<p class="small-text" style="margin-top:1rem;">No existen jugadas registradas.</p>`;
+    return;
+  }
+
+  const totalErrors = history.reduce((acc, r) => {
+    acc.voltaje += r.errores?.voltaje || 0;
+    acc.resistencia += r.errores?.resistencia || 0;
+    acc.corriente += r.errores?.corriente || 0;
+    return acc;
+  }, resetErrorCounter());
+
+  content.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-title">Estudiantes</div>
+        <div class="stat-value">${stats.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Jugadas totales</div>
+        <div class="stat-value">${history.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Promedio curso</div>
+        <div class="stat-value">${(history.reduce((sum, r) => sum + r.nota, 0) / history.length).toFixed(1)}</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Errores frecuentes del curso</h3>
+    ${errorSummaryHtml(totalErrors)}
+
+    <h3 class="section-title">Resumen por estudiante</h3>
+    ${teacherStudentTable(stats)}
+
+    <h3 class="section-title">Últimas jugadas registradas</h3>
+    ${teacherHistoryTable(history.slice(0, 50))}
+  `;
+}
+
+function teacherStudentTable(stats) {
+  const sorted = [...stats].sort((a, b) => a.name.localeCompare(b.name));
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Jugadas</th>
+            <th>Promedio</th>
+            <th>Mejor</th>
+            <th>Última</th>
+            <th>Mejora</th>
+            <th>Errores más relevantes</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sorted.map(s => `
+            <tr>
+              <td>${escapeHtml(s.name)}</td>
+              <td>${s.plays}</td>
+              <td>${s.avg.toFixed(1)}</td>
+              <td>${s.best.toFixed(1)}</td>
+              <td>${s.last.toFixed(1)}</td>
+              <td>${s.improvement === null ? "Sin datos" : `${s.improvement >= 0 ? "+" : ""}${s.improvement.toFixed(1)}`}</td>
+              <td>V:${s.errors.voltaje} / R:${s.errors.resistencia} / I:${s.errors.corriente}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function teacherHistoryTable(records) {
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Fecha</th>
+            <th>Jugada</th>
+            <th>Logro</th>
+            <th>Nota</th>
+            <th>Errores V/R/I</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${records.map(r => `
+            <tr>
+              <td>${escapeHtml(r.nombre)}</td>
+              <td>${escapeHtml(r.fecha)}</td>
+              <td>${r.jugada}</td>
+              <td>${r.porcentaje}%</td>
+              <td>${Number(r.nota).toFixed(1)}</td>
+              <td>${r.errores?.voltaje || 0}/${r.errores?.resistencia || 0}/${r.errores?.corriente || 0}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function cleanOldRecords() {
+  const ok = confirm(`Se conservarán solo las últimas ${MAX_PLAYS_PER_STUDENT} jugadas por estudiante. ¿Desea continuar?`);
+  if (!ok) return;
+
+  const grouped = groupByStudent();
+  let cleaned = [];
+
+  Object.values(grouped).forEach(records => {
+    cleaned = cleaned.concat(records.slice(-MAX_PLAYS_PER_STUDENT));
+  });
+
+  cleaned.sort((a, b) => a.timestamp - b.timestamp);
+
+  // Recalcular número de jugada por estudiante después de la limpieza.
+  const counters = {};
+  cleaned = cleaned.map(record => {
+    const key = record.nombre.toLowerCase();
+    counters[key] = (counters[key] || 0) + 1;
+    return { ...record, jugada: counters[key] };
+  });
+
+  setHistory(cleaned);
+  alert("Limpieza realizada correctamente.");
+  showTeacherPanelWithoutPassword();
+}
+
+function showTeacherPanelWithoutPassword() {
+  hideAllScreens();
+  document.getElementById("screen-teacher").classList.remove("hidden");
+
+  const stats = studentStats();
+  const history = getHistory().sort((a, b) => b.timestamp - a.timestamp);
+  const content = document.getElementById("teacher-content");
+
+  if (history.length === 0) {
+    content.innerHTML = `<p class="small-text" style="margin-top:1rem;">No existen jugadas registradas.</p>`;
+    return;
+  }
+
+  const totalErrors = history.reduce((acc, r) => {
+    acc.voltaje += r.errores?.voltaje || 0;
+    acc.resistencia += r.errores?.resistencia || 0;
+    acc.corriente += r.errores?.corriente || 0;
+    return acc;
+  }, resetErrorCounter());
+
+  content.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-title">Estudiantes</div>
+        <div class="stat-value">${stats.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Jugadas totales</div>
+        <div class="stat-value">${history.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Promedio curso</div>
+        <div class="stat-value">${(history.reduce((sum, r) => sum + r.nota, 0) / history.length).toFixed(1)}</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Errores frecuentes del curso</h3>
+    ${errorSummaryHtml(totalErrors)}
+
+    <h3 class="section-title">Resumen por estudiante</h3>
+    ${teacherStudentTable(stats)}
+
+    <h3 class="section-title">Últimas jugadas registradas</h3>
+    ${teacherHistoryTable(history.slice(0, 50))}
+  `;
+}
+
+function deleteAllHistory() {
+  const ok = confirm("Esta acción borrará todo el historial local del navegador. ¿Desea continuar?");
+  if (!ok) return;
+
+  localStorage.removeItem(STORAGE_KEY);
+  alert("Historial borrado correctamente.");
+  showTeacherPanelWithoutPassword();
+}
+
+function exportHistoryCSV() {
+  const history = getHistory();
+
+  if (history.length === 0) {
+    alert("No hay historial para exportar.");
+    return;
+  }
+
+  const headers = [
+    "nombre",
+    "fecha",
+    "jugada",
+    "correctas",
+    "total",
+    "porcentaje",
+    "nota",
+    "estado",
+    "errores_voltaje",
+    "errores_resistencia",
+    "errores_corriente"
+  ];
+
+  const rows = history.map(r => [
+    r.nombre,
+    r.fecha,
+    r.jugada,
+    r.correctas,
+    r.total,
+    r.porcentaje,
+    r.nota,
+    r.estado,
+    r.errores?.voltaje || 0,
+    r.errores?.resistencia || 0,
+    r.errores?.corriente || 0
+  ]);
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(";"))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "historial_ley_ohm.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ===========================================================
+// ATAJOS DE TECLADO
+// ===========================================================
+
+document.addEventListener("keydown", function(event) {
+  const questionVisible = !document.getElementById("screen-question").classList.contains("hidden");
+  if (!questionVisible) return;
+
+  if (event.key === "Enter") {
+    if (!document.getElementById("btn-submit").classList.contains("hidden")) {
+      submitAnswer();
+    } else if (!document.getElementById("btn-next").classList.contains("hidden")) {
+      nextQuestion();
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>
